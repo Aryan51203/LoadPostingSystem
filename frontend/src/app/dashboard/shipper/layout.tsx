@@ -13,6 +13,7 @@ export default function ShipperDashboardLayout({
 }) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -84,6 +85,16 @@ export default function ShipperDashboardLayout({
     { name: "Settings", href: "/dashboard/shipper/settings" },
     { name: "Sign out", href: "/auth/logout" },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post("/api/auth/logout");
+      window.location.href = "/auth/login";
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast.error("Failed to logout. Please try again.");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -178,6 +189,7 @@ export default function ShipperDashboardLayout({
                         type="button"
                         className="bg-blue-600 rounded-full flex text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-600 focus:ring-white"
                         id="user-menu-button"
+                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                       >
                         <span className="sr-only">Open user menu</span>
                         <div className="h-8 w-8 rounded-full bg-blue-700 flex items-center justify-center">
@@ -187,6 +199,37 @@ export default function ShipperDashboardLayout({
                         </div>
                       </button>
                     </div>
+                    {isUserMenuOpen && (
+                      <div
+                        className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                        role="menu"
+                        aria-orientation="vertical"
+                        aria-labelledby="user-menu-button"
+                        tabIndex={-1}
+                      >
+                        <Link
+                          href="/dashboard/shipper/profile"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                        >
+                          Your Profile
+                        </Link>
+                        <Link
+                          href="/dashboard/shipper/settings"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                        >
+                          Settings
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                        >
+                          Sign out
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -248,15 +291,24 @@ export default function ShipperDashboardLayout({
                   </button>
                 </div>
                 <div className="mt-3 px-2 space-y-1">
-                  {userNavigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="block rounded-md py-2 px-3 text-base font-medium text-white hover:bg-blue-500 hover:bg-opacity-75"
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
+                  <Link
+                    href="/dashboard/shipper/profile"
+                    className="block rounded-md py-2 px-3 text-base font-medium text-white hover:bg-blue-500 hover:bg-opacity-75"
+                  >
+                    Your Profile
+                  </Link>
+                  <Link
+                    href="/dashboard/shipper/settings"
+                    className="block rounded-md py-2 px-3 text-base font-medium text-white hover:bg-blue-500 hover:bg-opacity-75"
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left rounded-md py-2 px-3 text-base font-medium text-white hover:bg-blue-500 hover:bg-opacity-75"
+                  >
+                    Sign out
+                  </button>
                 </div>
               </div>
             </div>

@@ -6,6 +6,8 @@ const crypto = require("crypto");
 // @access  Public
 exports.register = async (req, res) => {
   try {
+    console.log("Registering user");
+    console.log(req.body);
     const { name, email, password, role, phone } = req.body;
 
     // Check if user already exists

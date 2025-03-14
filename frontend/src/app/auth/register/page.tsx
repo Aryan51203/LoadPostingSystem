@@ -115,8 +115,8 @@ export default function RegisterPage() {
         email: formData.email,
         password: formData.password,
         role: formData.role,
-        phone: formData.contactPhone,
-        name: formData.contactName,
+        phone: formData.phoneNumber,
+        name: formData.name,
       });
 
       // Register role-specific profile based on role
@@ -137,10 +137,12 @@ export default function RegisterPage() {
 
         toast.success("Shipper account created successfully!");
       } else if (formData.role === "trucker") {
-        await axiosInstance.post("/api/truckers", {
+        const response = await axiosInstance.post("/api/truckers", {
           driverLicense: formData.driverLicense,
           truck: formData.truck,
         });
+
+        console.log(response);
 
         toast.success("Trucker account created successfully!");
       }

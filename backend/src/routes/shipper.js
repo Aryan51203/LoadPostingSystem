@@ -8,6 +8,7 @@ const {
   createShipper,
   updateShipper,
   deleteShipper,
+  getDashboard,
 } = require("../controllers/shipperController");
 
 // @route   GET api/shippers
@@ -34,5 +35,10 @@ router.put("/:id", auth, updateShipper);
 // @desc    Delete shipper
 // @access  Private
 router.delete("/:id", auth, deleteShipper);
+
+// @route   GET api/shippers/dashboard
+// @desc    Get shipper dashboard data
+// @access  Private
+router.get("/dashboard", auth, getDashboard);
 
 module.exports = router;

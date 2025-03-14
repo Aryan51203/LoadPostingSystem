@@ -1,4 +1,5 @@
 const Shipper = require("../models/Shipper");
+const Load = require("../models/Load");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 
@@ -123,5 +124,63 @@ exports.deleteShipper = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: {},
+  });
+});
+
+// @desc    Get shipper dashboard data
+// @route   GET /api/shippers/dashboard
+// @access  Private
+exports.getDashboard = asyncHandler(async (req, res, next) => {
+  // Get shipper's loads with different statuses
+  const activeLoads = await Load.find({
+    shipper: req.user.id,
+    status: { $in: ["Posted", "Bidding", "Assigned", "In Transit"] },
+  }).populate("assignedTo", "name company");
+
+  const completedLoads = await Load.find({
+    shipper: req.user.id,
+    status: { $in: ["Delivered", "Completed"] },
+  });
+
+  const cancelledLoads = await Load.find({
+    shipper: req.user.id,
+    status: "Cancelled",
+  });
+
+  // Calculate statistics
+  const totalLoads = await Load.countDocuments({ shipper: req.user.id });
+  const activeLoadCount = activeLoads.length;
+  const completedLoadCount = completedLoads.length;
+  const cancelledLoadCount = cancelledLoads.length;
+
+  // Calculate total spent on completed loads
+  const totalSpent = completedLoads.reduce((acc, load) => {
+    return (
+      acc + (load.winningBid ? load.winningBid.amount : load.budget.amount)
+    );
+  }, 0);
+
+  // Get recent loads
+  const recentLoads = await Load.find({ shipper: req.user.id })
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .populate("assignedTo", "name company")
+    .select(
+      "title status createdAt budget.amount pickupLocation.city deliveryLocation.city"
+    );
+
+  res.status(200).json({
+    success: true,
+    data: {
+      statistics: {
+        totalLoads,
+        activeLoadCount,
+        completedLoadCount,
+        cancelledLoadCount,
+        totalSpent,
+      },
+      activeLoads,
+      recentLoads,
+    },
   });
 });
