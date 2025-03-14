@@ -31,6 +31,7 @@ const loadRoutes = require("./routes/load");
 const bidRoutes = require("./routes/bid");
 const adminRoutes = require("./routes/admin");
 const benefitRoutes = require("./routes/benefit");
+const errorHandler = require("./middleware/error");
 
 // Use routes
 app.use("/api/auth", authRoutes);
@@ -45,6 +46,8 @@ app.use("/api/benefits", benefitRoutes);
 app.get("/", (req, res) => {
   res.send("Load Posting System API");
 });
+
+app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 5000;

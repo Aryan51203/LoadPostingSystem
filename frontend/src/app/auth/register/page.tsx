@@ -123,10 +123,16 @@ export default function RegisterPage() {
 
       if (formData.role === "shipper") {
         await axiosInstance.post("/api/shippers", {
-          companyName: formData.companyName,
-          contactName: formData.contactName,
-          contactPhone: formData.contactPhone,
+          companyDetails: {
+            name: formData.companyName,
+            contactName: formData.contactName,
+            contactPhone: formData.contactPhone,
+          },
           address: formData.address,
+          contactPerson: {
+            name: formData.contactName,
+            phone: formData.contactPhone,
+          },
         });
 
         toast.success("Shipper account created successfully!");
