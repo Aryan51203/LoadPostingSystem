@@ -1,21 +1,19 @@
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const crypto = require('crypto');
+const User = require("../models/User");
+const crypto = require("crypto");
 
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role, phone, address, companyName } = req.body;
+    const { name, email, password, role, phone } = req.body;
 
     // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({
         success: false,
-        message: 'User with this email already exists'
+        message: "User with this email already exists",
       });
     }
 
@@ -26,8 +24,6 @@ exports.register = async (req, res) => {
       password,
       role,
       phone,
-      address,
-      companyName
     });
 
     // Send token response
@@ -36,7 +32,7 @@ exports.register = async (req, res) => {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: "Server error",
     });
   }
 };
@@ -52,16 +48,16 @@ exports.login = async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide an email and password'
+        message: "Please provide an email and password",
       });
     }
 
     // Check for user
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials'
+        message: "Invalid credentials",
       });
     }
 
@@ -70,7 +66,7 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials'
+        message: "Invalid credentials",
       });
     }
 
@@ -80,7 +76,7 @@ exports.login = async (req, res) => {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: "Server error",
     });
   }
 };
@@ -94,13 +90,13 @@ exports.getMe = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: user
+      data: user,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: "Server error",
     });
   }
 };
@@ -109,14 +105,14 @@ exports.getMe = async (req, res) => {
 // @route   GET /api/auth/logout
 // @access  Public
 exports.logout = (req, res) => {
-  res.cookie('token', 'none', {
+  res.cookie("token", "none", {
     expires: new Date(Date.now() + 10 * 1000),
-    httpOnly: true
+    httpOnly: true,
   });
 
   res.status(200).json({
     success: true,
-    data: {}
+    data: {},
   });
 };
 
@@ -130,28 +126,28 @@ exports.updateDetails = async (req, res) => {
       email: req.body.email,
       phone: req.body.phone,
       address: req.body.address,
-      companyName: req.body.companyName
+      companyName: req.body.companyName,
     };
 
     // Remove undefined fields
-    Object.keys(fieldsToUpdate).forEach(key => 
-      fieldsToUpdate[key] === undefined && delete fieldsToUpdate[key]
+    Object.keys(fieldsToUpdate).forEach(
+      (key) => fieldsToUpdate[key] === undefined && delete fieldsToUpdate[key]
     );
 
     const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
       new: true,
-      runValidators: true
+      runValidators: true,
     });
 
     res.status(200).json({
       success: true,
-      data: user
+      data: user,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: "Server error",
     });
   }
 };
@@ -161,13 +157,13 @@ exports.updateDetails = async (req, res) => {
 // @access  Private
 exports.updatePassword = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('+password');
+    const user = await User.findById(req.user.id).select("+password");
 
     // Check current password
     if (!(await user.matchPassword(req.body.currentPassword))) {
       return res.status(401).json({
         success: false,
-        message: 'Password is incorrect'
+        message: "Password is incorrect",
       });
     }
 
@@ -179,7 +175,7 @@ exports.updatePassword = async (req, res) => {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: "Server error",
     });
   }
 };
@@ -194,18 +190,18 @@ exports.forgotPassword = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'There is no user with that email'
+        message: "There is no user with that email",
       });
     }
 
     // Get reset token
-    const resetToken = crypto.randomBytes(20).toString('hex');
+    const resetToken = crypto.randomBytes(20).toString("hex");
 
     // Hash token and set to resetPasswordToken field
     user.resetPasswordToken = crypto
-      .createHash('sha256')
+      .createHash("sha256")
       .update(resetToken)
-      .digest('hex');
+      .digest("hex");
 
     // Set expire
     user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
@@ -216,14 +212,14 @@ exports.forgotPassword = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Email sent',
-      resetToken // Only for development, remove in production
+      message: "Email sent",
+      resetToken, // Only for development, remove in production
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: "Server error",
     });
   }
 };
@@ -235,19 +231,19 @@ exports.resetPassword = async (req, res) => {
   try {
     // Get hashed token
     const resetPasswordToken = crypto
-      .createHash('sha256')
+      .createHash("sha256")
       .update(req.params.resettoken)
-      .digest('hex');
+      .digest("hex");
 
     const user = await User.findOne({
       resetPasswordToken,
-      resetPasswordExpire: { $gt: Date.now() }
+      resetPasswordExpire: { $gt: Date.now() },
     });
 
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid token'
+        message: "Invalid token",
       });
     }
 
@@ -262,7 +258,7 @@ exports.resetPassword = async (req, res) => {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: "Server error",
     });
   }
 };
@@ -274,18 +270,18 @@ const sendTokenResponse = (user, statusCode, res) => {
 
   const options = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+      Date.now() + (process.env.JWT_COOKIE_EXPIRE || 30) * 24 * 60 * 60 * 1000
     ),
-    httpOnly: true
+    httpOnly: true,
   };
 
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === "production") {
     options.secure = true;
   }
 
   res
     .status(statusCode)
-    .cookie('token', token, options)
+    .cookie("token", token, options)
     .json({
       success: true,
       token,
@@ -293,7 +289,7 @@ const sendTokenResponse = (user, statusCode, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
-}; 
+};

@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import axiosInstance from "@/lib/utils/axiosInstance";
+import { toast } from "react-toastify";
 
 export default function ShipperDashboardLayout({
   children,
@@ -15,27 +17,22 @@ export default function ShipperDashboardLayout({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch user data from API or localStorage
+    // Fetch user data from API
     const fetchUser = async () => {
       try {
-        // This would be replaced with an actual API call
-        // const response = await fetch('http://localhost:5000/api/auth/me', {
-        //   headers: {
-        //     Authorization: `Bearer ${localStorage.getItem('token')}`,
-        //   },
-        // });
-        // const data = await response.json();
-        // setUser(data.data);
+        const response = await axiosInstance.get("/api/auth/me");
+        setUser(response.data.data);
 
         // Mock user data for now
         setUser({
-          name: 'John Doe',
-          email: 'john@example.com',
-          role: 'shipper',
-          companyName: 'ABC Shipping Co.',
+          name: "John Doe",
+          email: "john@example.com",
+          role: "shipper",
+          companyName: "ABC Shipping Co.",
         });
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
+        toast.error("Failed to fetch user data. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -45,19 +42,47 @@ export default function ShipperDashboardLayout({
   }, []);
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard/shipper', current: pathname === '/dashboard/shipper' },
-    { name: 'My Loads', href: '/dashboard/shipper/loads', current: pathname === '/dashboard/shipper/loads' },
-    { name: 'Post Load', href: '/dashboard/shipper/loads/create', current: pathname === '/dashboard/shipper/loads/create' },
-    { name: 'Bids', href: '/dashboard/shipper/bids', current: pathname === '/dashboard/shipper/bids' },
-    { name: 'Tracking', href: '/dashboard/shipper/tracking', current: pathname === '/dashboard/shipper/tracking' },
-    { name: 'Payments', href: '/dashboard/shipper/payments', current: pathname === '/dashboard/shipper/payments' },
-    { name: 'Reports', href: '/dashboard/shipper/reports', current: pathname === '/dashboard/shipper/reports' },
+    {
+      name: "Dashboard",
+      href: "/dashboard/shipper",
+      current: pathname === "/dashboard/shipper",
+    },
+    {
+      name: "My Loads",
+      href: "/dashboard/shipper/loads",
+      current: pathname === "/dashboard/shipper/loads",
+    },
+    {
+      name: "Post Load",
+      href: "/dashboard/shipper/loads/create",
+      current: pathname === "/dashboard/shipper/loads/create",
+    },
+    {
+      name: "Bids",
+      href: "/dashboard/shipper/bids",
+      current: pathname === "/dashboard/shipper/bids",
+    },
+    {
+      name: "Tracking",
+      href: "/dashboard/shipper/tracking",
+      current: pathname === "/dashboard/shipper/tracking",
+    },
+    {
+      name: "Payments",
+      href: "/dashboard/shipper/payments",
+      current: pathname === "/dashboard/shipper/payments",
+    },
+    {
+      name: "Reports",
+      href: "/dashboard/shipper/reports",
+      current: pathname === "/dashboard/shipper/reports",
+    },
   ];
 
   const userNavigation = [
-    { name: 'Your Profile', href: '/dashboard/shipper/profile' },
-    { name: 'Settings', href: '/dashboard/shipper/settings' },
-    { name: 'Sign out', href: '/auth/logout' },
+    { name: "Your Profile", href: "/dashboard/shipper/profile" },
+    { name: "Settings", href: "/dashboard/shipper/settings" },
+    { name: "Sign out", href: "/auth/logout" },
   ];
 
   if (isLoading) {
@@ -76,7 +101,10 @@ export default function ShipperDashboardLayout({
             <div className="relative h-16 flex items-center justify-between lg:border-b lg:border-blue-500 lg:border-opacity-25">
               <div className="px-2 flex items-center lg:px-0">
                 <div className="flex-shrink-0">
-                  <Link href="/dashboard/shipper" className="text-white font-bold text-xl">
+                  <Link
+                    href="/dashboard/shipper"
+                    className="text-white font-bold text-xl"
+                  >
                     LoadPostingSystem
                   </Link>
                 </div>
@@ -88,10 +116,10 @@ export default function ShipperDashboardLayout({
                         href={item.href}
                         className={`${
                           item.current
-                            ? 'bg-blue-700 text-white'
-                            : 'text-white hover:bg-blue-500 hover:bg-opacity-75'
+                            ? "bg-blue-700 text-white"
+                            : "text-white hover:bg-blue-500 hover:bg-opacity-75"
                         } rounded-md py-2 px-3 text-sm font-medium`}
-                        aria-current={item.current ? 'page' : undefined}
+                        aria-current={item.current ? "page" : undefined}
                       >
                         {item.name}
                       </Link>
@@ -154,7 +182,7 @@ export default function ShipperDashboardLayout({
                         <span className="sr-only">Open user menu</span>
                         <div className="h-8 w-8 rounded-full bg-blue-700 flex items-center justify-center">
                           <span className="text-white font-medium">
-                            {user?.name?.charAt(0).toUpperCase() || 'U'}
+                            {user?.name?.charAt(0).toUpperCase() || "U"}
                           </span>
                         </div>
                       </button>
@@ -174,10 +202,10 @@ export default function ShipperDashboardLayout({
                     href={item.href}
                     className={`${
                       item.current
-                        ? 'bg-blue-700 text-white'
-                        : 'text-white hover:bg-blue-500 hover:bg-opacity-75'
+                        ? "bg-blue-700 text-white"
+                        : "text-white hover:bg-blue-500 hover:bg-opacity-75"
                     } block rounded-md py-2 px-3 text-base font-medium`}
-                    aria-current={item.current ? 'page' : undefined}
+                    aria-current={item.current ? "page" : undefined}
                   >
                     {item.name}
                   </Link>
@@ -188,13 +216,17 @@ export default function ShipperDashboardLayout({
                   <div className="flex-shrink-0">
                     <div className="h-10 w-10 rounded-full bg-blue-700 flex items-center justify-center">
                       <span className="text-white font-medium">
-                        {user?.name?.charAt(0).toUpperCase() || 'U'}
+                        {user?.name?.charAt(0).toUpperCase() || "U"}
                       </span>
                     </div>
                   </div>
                   <div className="ml-3">
-                    <div className="text-base font-medium text-white">{user?.name}</div>
-                    <div className="text-sm font-medium text-blue-300">{user?.email}</div>
+                    <div className="text-base font-medium text-white">
+                      {user?.name}
+                    </div>
+                    <div className="text-sm font-medium text-blue-300">
+                      {user?.email}
+                    </div>
                   </div>
                   <button className="ml-auto bg-blue-600 flex-shrink-0 rounded-full p-1 text-blue-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-600 focus:ring-white">
                     <span className="sr-only">View notifications</span>
@@ -246,4 +278,4 @@ export default function ShipperDashboardLayout({
       </main>
     </div>
   );
-} 
+}

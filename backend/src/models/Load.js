@@ -198,6 +198,30 @@ const LoadSchema = new mongoose.Schema({
   },
   expiresAt: {
     type: Date
+  },
+  // Eligibility criteria for truckers
+  eligibilityCriteria: {
+    maxAccidentHistory: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    maxTheftComplaints: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    maxTruckAge: {
+      type: Number,
+      default: 5,
+      min: 0
+    },
+    minExperienceYears: {
+      type: Number,
+      default: 5,
+      min: 0
+    },
+    additionalRequirements: [String]
   }
 });
 
