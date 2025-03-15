@@ -70,8 +70,4 @@ const authorize = (...roles) => {
 };
 
 // Export protect as the default middleware
-module.exports = protect;
-
-// Also export other functions
-module.exports.protect = protect;
-module.exports.authorize = authorize;
+module.exports = { protect, authorize };

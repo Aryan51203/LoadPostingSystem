@@ -1,37 +1,44 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middleware/auth");
 const {
   getTruckers,
   getTrucker,
   createTrucker,
   updateTrucker,
   deleteTrucker,
+  getDashboard,
+  getLoads,
+  getBids,
+  getEarnings,
+  getPerformance,
 } = require("../controllers/truckerController");
 
-// @route   GET api/truckers
-// @desc    Get all truckers
-// @access  Private/Admin
-router.get("/", auth, getTruckers);
+const {
+  getDocuments,
+  uploadDocument,
+  deleteDocument,
+} = require("../controllers/documentController");
 
-// @route   GET api/truckers/:id
-// @desc    Get trucker by ID
-// @access  Private
-router.get("/:id", auth, getTrucker);
+const { protect } = require("../middleware/auth");
 
-// @route   POST api/truckers
-// @desc    Register a new trucker
-// @access  Public
-router.post("/", auth, createTrucker);
+// Protect all routes
+router.use(protect);
 
-// @route   PUT api/truckers/:id
-// @desc    Update trucker
-// @access  Private
-router.put("/:id", auth, updateTrucker);
+// Document routes
+router.get("/documents", getDocuments);
+router.post("/documents", uploadDocument);
+router.delete("/documents/:id", deleteDocument);
 
-// @route   DELETE api/truckers/:id
-// @desc    Delete trucker
-// @access  Private
-router.delete("/:id", auth, deleteTrucker);
+// Trucker routes
+router.get("/", getTruckers);
+router.get("/:id", getTrucker);
+router.post("/", createTrucker);
+router.put("/:id", updateTrucker);
+router.delete("/:id", deleteTrucker);
+router.get("/dashboard", getDashboard);
+router.get("/loads", getLoads);
+router.get("/bids", getBids);
+router.get("/earnings", getEarnings);
+router.get("/performance", getPerformance);
 
 module.exports = router;

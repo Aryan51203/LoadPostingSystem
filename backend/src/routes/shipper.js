@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middleware/auth");
+const { protect, authorize } = require("../middleware/auth");
 
 const {
   getShippers,
@@ -14,31 +14,31 @@ const {
 // @route   GET api/shippers
 // @desc    Get all shippers
 // @access  Private/Admin
-router.get("/", auth, getShippers);
+router.get("/", protect, authorize("admin"), getShippers);
 
 // @route   GET api/shippers/:id
 // @desc    Get shipper by ID
 // @access  Private
-router.get("/:id", auth, getShipper);
+router.get("/:id", protect, getShipper);
 
 // @route   POST api/shippers
 // @desc    Register a new shipper
 // @access  Private
-router.post("/", auth, createShipper);
+router.post("/", protect, createShipper);
 
 // @route   PUT api/shippers/:id
 // @desc    Update shipper
 // @access  Private
-router.put("/:id", auth, updateShipper);
+router.put("/:id", protect, updateShipper);
 
 // @route   DELETE api/shippers/:id
 // @desc    Delete shipper
 // @access  Private
-router.delete("/:id", auth, deleteShipper);
+router.delete("/:id", protect, deleteShipper);
 
 // @route   GET api/shippers/dashboard
 // @desc    Get shipper dashboard data
 // @access  Private
-router.get("/dashboard", auth, getDashboard);
+router.get("/dashboard", protect, getDashboard);
 
 module.exports = router;
