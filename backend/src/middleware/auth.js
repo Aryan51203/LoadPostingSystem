@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const Trucker = require("../models/Trucker");
+const Shipper = require("../models/Shipper");
 
 // Protect routes
 const protect = async (req, res, next) => {
@@ -37,6 +39,28 @@ const protect = async (req, res, next) => {
         success: false,
         message: "User not found",
       });
+    }
+
+    if (req.user.role === "trucker") {
+      const trucker = await Trucker.findOne({ user: req.user.id });
+      req.trucker = trucker;
+      if (!trucker) {
+        return res.status(401).json({
+          success: false,
+          message: "Trucker not found",
+        });
+      }
+    }
+
+    if (req.user.role === "shipper") {
+      const shipper = await Shipper.findOne({ user: req.user.id });
+      req.shipper = shipper;
+      if (!shipper) {
+        return res.status(401).json({
+          success: false,
+          message: "Shipper not found",
+        });
+      }
     }
 
     next();

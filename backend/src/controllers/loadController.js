@@ -8,7 +8,6 @@ const asyncHandler = require("../middleware/async");
 exports.createLoad = async (req, res) => {
   try {
     // Add user as shipper
-    req.body.shipper = req.user.id;
 
     // Validate user is a shipper
     const shipper = await Shipper.findOne({ user: req.user.id });
@@ -20,6 +19,7 @@ exports.createLoad = async (req, res) => {
       });
     }
 
+    req.body.shipper = shipper.id;
     // Create load
     const load = await Load.create(req.body);
 
@@ -124,7 +124,10 @@ exports.getLoads = async (req, res) => {
     const startIndex = (page - 1) * limit;
 
     const loads = await Load.find(query)
-      .populate("shipper", "companyName contactName contactPhone")
+      .populate({
+        path: "shipper",
+        select: "companyDetails contactPerson",
+      })
       .skip(startIndex)
       .limit(limit)
       .sort({ createdAt: -1 });
@@ -305,7 +308,7 @@ exports.deleteLoad = async (req, res) => {
 // @access  Private/Shipper
 exports.getShipperLoads = async (req, res) => {
   try {
-    const loads = await Load.find({ shipper: req.user.id }).sort({
+    const loads = await Load.find({ shipper: req.shipper._id }).sort({
       createdAt: -1,
     });
 

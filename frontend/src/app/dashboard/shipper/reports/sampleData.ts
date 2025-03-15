@@ -1,0 +1,67 @@
+export const sampleReportData = {
+  overview: {
+    totalLoads: 248,
+    totalSpent: 456789.5,
+    averageLoadCost: 1842.7,
+    completionRate: 94.5,
+  },
+  monthlySpending: [
+    { month: "Jan", amount: 35000 },
+    { month: "Feb", amount: 42000 },
+    { month: "Mar", amount: 38500 },
+    { month: "Apr", amount: 45000 },
+    { month: "May", amount: 52000 },
+    { month: "Jun", amount: 48000 },
+    { month: "Jul", amount: 51000 },
+    { month: "Aug", amount: 49500 },
+    { month: "Sep", amount: 47000 },
+    { month: "Oct", amount: 44000 },
+    { month: "Nov", amount: 46000 },
+    { month: "Dec", amount: 43000 },
+  ],
+  loadsByStatus: [
+    { status: "Completed", count: 235 },
+    { status: "In Transit", count: 42 },
+    { status: "Pending", count: 18 },
+    { status: "Cancelled", count: 8 },
+  ],
+  topRoutes: [
+    { route: "Los Angeles, CA → Chicago, IL", count: 45, averageCost: 2100.5 },
+    { route: "Miami, FL → New York, NY", count: 38, averageCost: 1850.75 },
+    { route: "Seattle, WA → Denver, CO", count: 32, averageCost: 1950.25 },
+    { route: "Houston, TX → Atlanta, GA", count: 28, averageCost: 1650.0 },
+    { route: "Chicago, IL → Dallas, TX", count: 25, averageCost: 1750.5 },
+  ],
+  carrierPerformance: [
+    {
+      carrierName: "Swift Transport",
+      completedLoads: 85,
+      averageRating: 4.8,
+      onTimeDelivery: 96,
+    },
+    {
+      carrierName: "Eagle Logistics",
+      completedLoads: 72,
+      averageRating: 4.6,
+      onTimeDelivery: 94,
+    },
+    {
+      carrierName: "Prime Carriers",
+      completedLoads: 65,
+      averageRating: 4.7,
+      onTimeDelivery: 95,
+    },
+    {
+      carrierName: "Blue Line Freight",
+      completedLoads: 58,
+      averageRating: 4.5,
+      onTimeDelivery: 92,
+    },
+    {
+      carrierName: "Star Shipping",
+      completedLoads: 45,
+      averageRating: 4.4,
+      onTimeDelivery: 91,
+    },
+  ],
+};

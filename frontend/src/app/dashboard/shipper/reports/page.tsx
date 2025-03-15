@@ -2,35 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import axiosInstance from "@/lib/utils/axiosInstance";
-
-interface ReportData {
-  overview: {
-    totalLoads: number;
-    totalSpent: number;
-    averageLoadCost: number;
-    completionRate: number;
-  };
-  monthlySpending: {
-    month: string;
-    amount: number;
-  }[];
-  loadsByStatus: {
-    status: string;
-    count: number;
-  }[];
-  topRoutes: {
-    route: string;
-    count: number;
-    averageCost: number;
-  }[];
-  carrierPerformance: {
-    carrierName: string;
-    completedLoads: number;
-    averageRating: number;
-    onTimeDelivery: number;
-  }[];
-}
+// import axiosInstance from "@/lib/utils/axiosInstance";
+import { last7DaysData, last30DaysData, last90DaysData } from "./mockData";
+import { ReportData } from "./types";
 
 export default function ShipperReports() {
   const [reportData, setReportData] = useState<ReportData | null>(null);
@@ -40,10 +14,31 @@ export default function ShipperReports() {
   useEffect(() => {
     const fetchReportData = async () => {
       try {
-        const response = await axiosInstance.get(
-          `/api/reports/shipper?range=${dateRange}`
-        );
-        setReportData(response.data.data);
+        // For development, use mock data based on date range
+        let data;
+        switch (dateRange) {
+          case "last7days":
+            data = last7DaysData;
+            break;
+          case "last30days":
+            data = last30DaysData;
+            break;
+          case "last90days":
+            data = last90DaysData;
+            break;
+          case "thisYear":
+            data = last90DaysData; // Using 90 days data as a fallback
+            break;
+          default:
+            data = last30DaysData;
+        }
+        setReportData(data);
+
+        // In production, uncomment the API call below
+        // const response = await axiosInstance.get(
+        //   `/api/reports/shipper?range=${dateRange}`
+        // );
+        // setReportData(response.data.data);
       } catch (error) {
         console.error("Error fetching report data:", error);
         toast.error("Failed to fetch report data. Please try again.");

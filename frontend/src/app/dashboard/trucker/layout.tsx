@@ -6,6 +6,11 @@ import { usePathname } from "next/navigation";
 import axiosInstance from "@/lib/utils/axiosInstance";
 import { toast } from "react-toastify";
 
+interface User {
+  name: string;
+  email: string;
+}
+
 export default function TruckerDashboardLayout({
   children,
 }: {
@@ -14,7 +19,7 @@ export default function TruckerDashboardLayout({
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -76,16 +81,6 @@ export default function TruckerDashboardLayout({
     { name: "Settings", href: "/dashboard/trucker/settings" },
     { name: "Sign out", href: "/auth/logout" },
   ];
-
-  const handleLogout = async () => {
-    try {
-      await axiosInstance.post("/api/auth/logout");
-      window.location.href = "/auth/login";
-    } catch (error) {
-      console.error("Error logging out:", error);
-      toast.error("Failed to logout. Please try again.");
-    }
-  };
 
   if (isLoading) {
     return (

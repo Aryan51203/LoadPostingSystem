@@ -1,10 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/utils/axiosInstance";
+import {
+  Dialog,
+  DialogTitle,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
+import { Fragment, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Dialog, Transition } from "@headlessui/react";
-import { Fragment } from "react";
 
 interface Load {
   _id: string;
@@ -33,8 +37,13 @@ interface Load {
   };
   shipper: {
     _id: string;
-    name: string;
-    company: string;
+    companyDetails: {
+      name: string;
+    };
+    contactPerson: {
+      name: string;
+      phone: string;
+    };
     rating: number;
   };
   requirements?: {
@@ -53,6 +62,8 @@ export default function AvailableLoads() {
   const [isBidModalOpen, setIsBidModalOpen] = useState(false);
   const [bidAmount, setBidAmount] = useState("");
   const [bidNotes, setBidNotes] = useState("");
+  const [proposedPickupDate, setProposedPickupDate] = useState("");
+  const [proposedDeliveryDate, setProposedDeliveryDate] = useState("");
   const [filters, setFilters] = useState({
     minBudget: "",
     maxBudget: "",
@@ -73,6 +84,7 @@ export default function AvailableLoads() {
           pickupDate: filters.pickupDate || undefined,
         },
       });
+      console.log(response.data);
       setLoads(response.data.data);
     } catch (error) {
       console.error("Error fetching available loads:", error);
@@ -86,14 +98,21 @@ export default function AvailableLoads() {
     if (!selectedLoad || !bidAmount) return;
 
     try {
-      await axiosInstance.post(`/api/loads/${selectedLoad._id}/bids`, {
+      await axiosInstance.post(`/api/bids`, {
+        loadId: selectedLoad._id,
         amount: parseFloat(bidAmount),
-        notes: bidNotes,
+        message: bidNotes,
+        proposedPickupDate:
+          proposedPickupDate || selectedLoad.schedule.pickupDate,
+        proposedDeliveryDate:
+          proposedDeliveryDate || selectedLoad.schedule.deliveryDate,
       });
       toast.success("Bid submitted successfully");
       setIsBidModalOpen(false);
       setBidAmount("");
       setBidNotes("");
+      setProposedPickupDate("");
+      setProposedDeliveryDate("");
       fetchAvailableLoads(); // Refresh the list
     } catch (error) {
       console.error("Error submitting bid:", error);
@@ -263,7 +282,8 @@ export default function AvailableLoads() {
                   <p className="text-sm text-gray-500">
                     Requirements: {load.requirements.truckType},{" "}
                     {load.requirements.capacity}
-                    {load.requirements.specialRequirements?.length > 0 &&
+                    {load.requirements.specialRequirements &&
+                      load.requirements.specialRequirements.length > 0 &&
                       `, ${load.requirements.specialRequirements.join(", ")}`}
                   </p>
                 </div>
@@ -273,7 +293,8 @@ export default function AvailableLoads() {
                   <p>Distance: {load.distance} miles</p>
                   <span className="mx-2">•</span>
                   <p>
-                    Shipper: {load.shipper.name} ({load.shipper.company})
+                    Shipper: {load.shipper.contactPerson.name} (
+                    {load.shipper.companyDetails.name})
                   </p>
                   <span className="mx-2">•</span>
                   <div className="flex items-center">
@@ -284,7 +305,11 @@ export default function AvailableLoads() {
                     >
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
-                    <p className="ml-1">{load.shipper.rating.toFixed(1)}</p>
+                    <p className="ml-1">
+                      {load.shipper.rating
+                        ? load.shipper.rating.toFixed(1)
+                        : "N/A"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -293,14 +318,14 @@ export default function AvailableLoads() {
         </ul>
       </div>
 
-      <Transition.Root show={isBidModalOpen} as={Fragment}>
+      <Transition show={isBidModalOpen} as={Fragment}>
         <Dialog
           as="div"
           className="fixed z-10 inset-0 overflow-y-auto"
           onClose={setIsBidModalOpen}
         >
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0"
@@ -309,8 +334,8 @@ export default function AvailableLoads() {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-            </Transition.Child>
+              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </TransitionChild>
 
             <span
               className="hidden sm:inline-block sm:align-middle sm:h-screen"
@@ -318,7 +343,8 @@ export default function AvailableLoads() {
             >
               &#8203;
             </span>
-            <Transition.Child
+
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -330,12 +356,12 @@ export default function AvailableLoads() {
               <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
                 <div>
                   <div className="mt-3 sm:mt-5">
-                    <Dialog.Title
+                    <DialogTitle
                       as="h3"
                       className="text-lg leading-6 font-medium text-gray-900"
                     >
                       Place Bid for {selectedLoad?.title}
-                    </Dialog.Title>
+                    </DialogTitle>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
                         Load Budget: $
@@ -375,6 +401,47 @@ export default function AvailableLoads() {
                           placeholder="Add any notes about your bid"
                         />
                       </div>
+                      <div className="mt-4">
+                        <label
+                          htmlFor="proposedPickupDate"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Proposed Pickup Date
+                        </label>
+                        <input
+                          type="date"
+                          id="proposedPickupDate"
+                          name="proposedPickupDate"
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          value={proposedPickupDate}
+                          onChange={(e) =>
+                            setProposedPickupDate(e.target.value)
+                          }
+                          min={new Date().toISOString().split("T")[0]}
+                        />
+                      </div>
+                      <div className="mt-4">
+                        <label
+                          htmlFor="proposedDeliveryDate"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Proposed Delivery Date
+                        </label>
+                        <input
+                          type="date"
+                          id="proposedDeliveryDate"
+                          name="proposedDeliveryDate"
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          value={proposedDeliveryDate}
+                          onChange={(e) =>
+                            setProposedDeliveryDate(e.target.value)
+                          }
+                          min={
+                            proposedPickupDate ||
+                            new Date().toISOString().split("T")[0]
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -395,10 +462,10 @@ export default function AvailableLoads() {
                   </button>
                 </div>
               </div>
-            </Transition.Child>
+            </TransitionChild>
           </div>
         </Dialog>
-      </Transition.Root>
+      </Transition>
     </div>
   );
 }

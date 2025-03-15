@@ -10,6 +10,11 @@ const bidController = require("../controllers/bidController");
 // @access  Private/Trucker
 router.get("/", protect, bidController.getTruckerBids);
 
+// @route   GET api/bids/shipper
+// @desc    Get bids placed by a shipper
+// @access  Private/Shipper
+router.get("/shipper", protect, bidController.getShipperBids);
+
 // @route   GET api/bids/load/:loadId
 // @desc    Get bids for a specific load
 // @access  Private/Shipper

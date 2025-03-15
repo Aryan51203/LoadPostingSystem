@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import axiosInstance from "@/lib/utils/axiosInstance";
 
 interface Shipment {
   _id: string;
@@ -40,6 +39,115 @@ interface Shipment {
   }[];
 }
 
+const mockShipments: Shipment[] = [
+  {
+    _id: "ship_1",
+    load: {
+      _id: "load_1",
+      title: "Electronics Shipment to NYC",
+    },
+    carrier: {
+      companyName: "FastTrack Logistics",
+      contactNumber: "(555) 123-4567",
+    },
+    status: "In Transit",
+    currentLocation: {
+      latitude: 40.7128,
+      longitude: -74.006,
+      address: "456 Transit Way, Newark, NJ 07102",
+      lastUpdated: new Date().toISOString(),
+    },
+    estimatedArrival: new Date(
+      Date.now() + 2 * 24 * 60 * 60 * 1000
+    ).toISOString(),
+    pickupLocation: {
+      address: "123 Warehouse Ave",
+      city: "Chicago",
+      state: "IL",
+    },
+    deliveryLocation: {
+      address: "789 Distribution Center",
+      city: "New York",
+      state: "NY",
+    },
+    milestones: [
+      {
+        name: "Order Received",
+        status: "completed",
+        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        name: "Pickup Completed",
+        status: "completed",
+        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        name: "In Transit",
+        status: "in progress",
+        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        name: "Delivery",
+        status: "pending",
+        timestamp: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
+  },
+  {
+    _id: "ship_2",
+    load: {
+      _id: "load_2",
+      title: "Fresh Produce Delivery",
+    },
+    carrier: {
+      companyName: "Cool Chain Express",
+      contactNumber: "(555) 987-6543",
+    },
+    status: "Delayed",
+    currentLocation: {
+      latitude: 39.9526,
+      longitude: -75.1652,
+      address: "789 Delay Lane, Philadelphia, PA 19019",
+      lastUpdated: new Date().toISOString(),
+    },
+    estimatedArrival: new Date(
+      Date.now() + 1 * 24 * 60 * 60 * 1000
+    ).toISOString(),
+    pickupLocation: {
+      address: "456 Farm Road",
+      city: "Lancaster",
+      state: "PA",
+    },
+    deliveryLocation: {
+      address: "101 Market Street",
+      city: "Boston",
+      state: "MA",
+    },
+    milestones: [
+      {
+        name: "Order Received",
+        status: "completed",
+        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        name: "Pickup Completed",
+        status: "completed",
+        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        name: "In Transit",
+        status: "in progress",
+        timestamp: new Date().toISOString(),
+      },
+      {
+        name: "Delivery",
+        status: "pending",
+        timestamp: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
+  },
+];
+
 export default function ShipperTracking() {
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,8 +155,15 @@ export default function ShipperTracking() {
   useEffect(() => {
     const fetchShipments = async () => {
       try {
-        const response = await axiosInstance.get("/api/shipments/active");
-        setShipments(response.data.data);
+        // Simulate API call delay
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Use mock data instead of API call for now
+        setShipments(mockShipments);
+
+        // Keeping the API call commented for future use
+        // const response = await axiosInstance.get("/api/shipments/active");
+        // setShipments(response.data.data);
       } catch (error) {
         console.error("Error fetching shipments:", error);
         toast.error("Failed to fetch shipments. Please try again.");
@@ -91,7 +206,7 @@ export default function ShipperTracking() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <p className="text-sm text-gray-500">Coming Soon...</p>
       </div>
     );
   }

@@ -31,14 +31,14 @@ router.delete("/documents/:id", deleteDocument);
 
 // Trucker routes
 router.get("/", getTruckers);
-router.get("/:id", getTrucker);
+router.get("/bids", getBids);
 router.post("/", createTrucker);
-router.put("/:id", updateTrucker);
-router.delete("/:id", deleteTrucker);
 router.get("/dashboard", getDashboard);
 router.get("/loads", getLoads);
-router.get("/bids", getBids);
 router.get("/earnings", getEarnings);
 router.get("/performance", getPerformance);
+router.get("/:id", getTrucker);
+router.put("/:id", updateTrucker);
+router.delete("/:id", deleteTrucker);
 
 module.exports = router;

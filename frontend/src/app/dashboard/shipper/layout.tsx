@@ -1,10 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import axiosInstance from "@/lib/utils/axiosInstance";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import axiosInstance from "@/lib/utils/axiosInstance";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+
+interface User {
+  name: string;
+  email: string;
+  role: string;
+  companyName: string;
+}
 
 export default function ShipperDashboardLayout({
   children,
@@ -14,7 +21,7 @@ export default function ShipperDashboardLayout({
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -81,20 +88,10 @@ export default function ShipperDashboardLayout({
   ];
 
   const userNavigation = [
-    { name: "Your Profile", href: "/dashboard/shipper/profile" },
-    { name: "Settings", href: "/dashboard/shipper/settings" },
+    { name: "Your Profile", href: "/dashboard/trucker/profile" },
+    { name: "Settings", href: "/dashboard/trucker/settings" },
     { name: "Sign out", href: "/auth/logout" },
   ];
-
-  const handleLogout = async () => {
-    try {
-      await axiosInstance.post("/api/auth/logout");
-      window.location.href = "/auth/login";
-    } catch (error) {
-      console.error("Error logging out:", error);
-      toast.error("Failed to logout. Please try again.");
-    }
-  };
 
   if (isLoading) {
     return (
@@ -207,27 +204,15 @@ export default function ShipperDashboardLayout({
                         aria-labelledby="user-menu-button"
                         tabIndex={-1}
                       >
-                        <Link
-                          href="/dashboard/shipper/profile"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          role="menuitem"
-                        >
-                          Your Profile
-                        </Link>
-                        <Link
-                          href="/dashboard/shipper/settings"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          role="menuitem"
-                        >
-                          Settings
-                        </Link>
-                        <button
-                          onClick={handleLogout}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          role="menuitem"
-                        >
-                          Sign out
-                        </button>
+                        {userNavigation.map((item) => (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            className="block rounded-md py-2 px-3 text-base font-medium text-white hover:bg-blue-500 hover:bg-opacity-75"
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
                       </div>
                     )}
                   </div>
@@ -291,24 +276,15 @@ export default function ShipperDashboardLayout({
                   </button>
                 </div>
                 <div className="mt-3 px-2 space-y-1">
-                  <Link
-                    href="/dashboard/shipper/profile"
-                    className="block rounded-md py-2 px-3 text-base font-medium text-white hover:bg-blue-500 hover:bg-opacity-75"
-                  >
-                    Your Profile
-                  </Link>
-                  <Link
-                    href="/dashboard/shipper/settings"
-                    className="block rounded-md py-2 px-3 text-base font-medium text-white hover:bg-blue-500 hover:bg-opacity-75"
-                  >
-                    Settings
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left rounded-md py-2 px-3 text-base font-medium text-white hover:bg-blue-500 hover:bg-opacity-75"
-                  >
-                    Sign out
-                  </button>
+                  {userNavigation.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="block rounded-md py-2 px-3 text-base font-medium text-white hover:bg-blue-500 hover:bg-opacity-75"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
                 </div>
               </div>
             </div>

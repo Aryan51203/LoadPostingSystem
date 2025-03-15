@@ -11,19 +11,17 @@ interface Bid {
     _id: string;
     title: string;
   };
-  carrier: {
+  trucker: {
     _id: string;
-    companyName: string;
-    rating: number;
+    name: string;
   };
   amount: number;
   currency: string;
-  status: string;
-  proposedSchedule: {
-    pickupDate: string;
-    deliveryDate: string;
-  };
   message: string;
+  proposedPickupDate: string;
+  proposedDeliveryDate: string;
+  status: string;
+  isWinningBid: boolean;
   createdAt: string;
 }
 
@@ -177,10 +175,7 @@ export default function ShipperBids() {
                             </Link>
                           </td>
                           <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            <div>{bid.carrier.companyName}</div>
-                            <div className="text-xs">
-                              Rating: {bid.carrier.rating}/5
-                            </div>
+                            <div>{bid.trucker.name}</div>
                           </td>
                           <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                             {bid.currency} {bid.amount}
@@ -189,13 +184,13 @@ export default function ShipperBids() {
                             <div>
                               Pickup:{" "}
                               {new Date(
-                                bid.proposedSchedule.pickupDate
+                                bid.proposedPickupDate
                               ).toLocaleDateString()}
                             </div>
                             <div>
                               Delivery:{" "}
                               {new Date(
-                                bid.proposedSchedule.deliveryDate
+                                bid.proposedDeliveryDate
                               ).toLocaleDateString()}
                             </div>
                           </td>

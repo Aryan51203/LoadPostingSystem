@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { toast } from "react-toastify";
-import axiosInstance from "@/lib/utils/axiosInstance";
+import { useState } from "react";
 
 interface Payment {
   _id: string;
@@ -32,56 +30,6 @@ export default function ShipperPayments() {
     completed: 0,
   });
 
-  useEffect(() => {
-    const fetchPayments = async () => {
-      try {
-        const response = await axiosInstance.get("/api/payments/shipper");
-        setPayments(response.data.data);
-
-        // Calculate totals
-        const totals = response.data.data.reduce(
-          (acc: any, payment: Payment) => {
-            if (payment.status.toLowerCase() === "pending") {
-              acc.pending += payment.amount;
-            } else if (payment.status.toLowerCase() === "completed") {
-              acc.completed += payment.amount;
-            }
-            return acc;
-          },
-          { pending: 0, completed: 0 }
-        );
-
-        setTotalAmount(totals);
-      } catch (error) {
-        console.error("Error fetching payments:", error);
-        toast.error("Failed to fetch payments. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPayments();
-  }, []);
-
-  const handlePayment = async (paymentId: string) => {
-    try {
-      await axiosInstance.post(`/api/payments/${paymentId}/process`);
-      toast.success("Payment processed successfully");
-
-      // Update payment status in the UI
-      setPayments((prevPayments) =>
-        prevPayments.map((payment) =>
-          payment._id === paymentId
-            ? { ...payment, status: "completed" }
-            : payment
-        )
-      );
-    } catch (error) {
-      console.error("Error processing payment:", error);
-      toast.error("Failed to process payment. Please try again.");
-    }
-  };
-
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
@@ -99,14 +47,6 @@ export default function ShipperPayments() {
     filter === "all"
       ? payments
       : payments.filter((payment) => payment.status.toLowerCase() === filter);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="py-6">
@@ -209,7 +149,7 @@ export default function ShipperPayments() {
                 <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                   {filteredPayments.length === 0 ? (
                     <div className="text-center py-12 bg-white">
-                      <p className="text-sm text-gray-500">No payments found</p>
+                      <p className="text-sm text-gray-500">Coming Soon...</p>
                     </div>
                   ) : (
                     <table className="min-w-full divide-y divide-gray-300">

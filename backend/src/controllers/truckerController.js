@@ -134,7 +134,10 @@ exports.getDashboard = asyncHandler(async (req, res, next) => {
   const currentLoads = await Load.find({
     assignedTo: req.user.id,
     status: { $in: ["Assigned", "In Transit"] },
-  }).populate("shipper", "name company");
+  }).populate({
+    path: "shipper",
+    select: "companyDetails contactPerson",
+  });
 
   // Get available loads for bidding
   const availableLoads = await Load.find({
@@ -143,7 +146,10 @@ exports.getDashboard = asyncHandler(async (req, res, next) => {
   })
     .sort({ createdAt: -1 })
     .limit(5)
-    .populate("shipper", "name company");
+    .populate({
+      path: "shipper",
+      select: "companyDetails contactPerson",
+    });
 
   // Get completed loads
   const completedLoads = await Load.find({
@@ -167,12 +173,8 @@ exports.getDashboard = asyncHandler(async (req, res, next) => {
     completedLoads.length > 0 ? onTimeDeliveryCount / completedLoads.length : 0;
 
   // Get trucker's average rating
-  const trucker = await User.findById(req.user.id).select("ratings");
-  const averageRating =
-    trucker.ratings.length > 0
-      ? trucker.ratings.reduce((acc, rating) => acc + rating, 0) /
-        trucker.ratings.length
-      : 0;
+  const trucker = req.trucker;
+  const averageRating = trucker.rating.average;
 
   res.status(200).json({
     success: true,
@@ -198,7 +200,10 @@ exports.getLoads = asyncHandler(async (req, res, next) => {
     assignedTo: req.user.id,
   })
     .sort({ createdAt: -1 })
-    .populate("shipper", "name company");
+    .populate({
+      path: "shipper",
+      select: "companyDetails contactPerson",
+    });
 
   res.status(200).json({
     success: true,
@@ -211,7 +216,7 @@ exports.getLoads = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.getBids = asyncHandler(async (req, res, next) => {
   const bids = await Bid.find({
-    trucker: req.user.id,
+    trucker: req.trucker.id,
   })
     .sort({ createdAt: -1 })
     .populate({
@@ -277,7 +282,7 @@ exports.getEarnings = asyncHandler(async (req, res, next) => {
 // @route   GET /api/truckers/performance
 // @access  Private
 exports.getPerformance = asyncHandler(async (req, res, next) => {
-  const trucker = await User.findById(req.user.id).select("ratings");
+  const trucker = req.trucker;
   const completedLoads = await Load.find({
     assignedTo: req.user.id,
     status: { $in: ["Delivered", "Completed"] },
@@ -292,11 +297,7 @@ exports.getPerformance = asyncHandler(async (req, res, next) => {
     completedLoads.length > 0 ? onTimeDeliveryCount / completedLoads.length : 0;
 
   // Calculate average rating
-  const averageRating =
-    trucker.ratings.length > 0
-      ? trucker.ratings.reduce((acc, rating) => acc + rating, 0) /
-        trucker.ratings.length
-      : 0;
+  const averageRating = trucker.rating.average;
 
   // Calculate load acceptance rate
   const totalLoadOffers = await Load.countDocuments({
@@ -312,7 +313,7 @@ exports.getPerformance = asyncHandler(async (req, res, next) => {
       onTimeDeliveryRate,
       averageRating,
       loadAcceptanceRate,
-      ratings: trucker.ratings,
+      ratings: trucker.rating,
     },
   });
 });

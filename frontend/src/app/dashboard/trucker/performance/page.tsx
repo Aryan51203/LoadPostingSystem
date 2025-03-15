@@ -1,6 +1,6 @@
 "use client";
 
-import axiosInstance from "@/lib/utils/axiosInstance";
+// import axiosInstance from "@/lib/utils/axiosInstance";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -39,6 +39,55 @@ interface PerformanceData {
   };
 }
 
+// Dummy data for development and testing
+const MOCK_PERFORMANCE_DATA: PerformanceData = {
+  overallRating: 4.7,
+  totalLoadsDelivered: 156,
+  onTimeDeliveryRate: 0.95,
+  loadAcceptanceRate: 0.88,
+  averageResponseTime: 12,
+  monthlyRatings: {
+    "2024-01": 4.5,
+    "2024-02": 4.6,
+    "2024-03": 4.7,
+    "2024-04": 4.8,
+    "2024-05": 4.7,
+    "2024-06": 4.9,
+  },
+  recentReviews: [
+    {
+      _id: "1",
+      rating: 5,
+      comment: "Excellent service! Very professional and punctual.",
+      shipperName: "John Smith Logistics",
+      loadTitle: "Electronics Shipment LA to SF",
+      createdAt: "2024-06-15T10:30:00Z",
+    },
+    {
+      _id: "2",
+      rating: 4,
+      comment: "Good communication throughout the delivery.",
+      shipperName: "Global Transport Co",
+      loadTitle: "Furniture Delivery",
+      createdAt: "2024-06-10T15:20:00Z",
+    },
+    {
+      _id: "3",
+      rating: 5,
+      comment: "Very careful with fragile cargo. Would hire again!",
+      shipperName: "Express Shipping LLC",
+      loadTitle: "Glass Products Transport",
+      createdAt: "2024-06-05T09:45:00Z",
+    },
+  ],
+  performanceMetrics: {
+    communicationScore: 92,
+    reliabilityScore: 95,
+    professionalismScore: 88,
+    cargoHandlingScore: 90,
+  },
+};
+
 export default function TruckerPerformance() {
   const [performanceData, setPerformanceData] =
     useState<PerformanceData | null>(null);
@@ -51,10 +100,10 @@ export default function TruckerPerformance() {
 
   const fetchPerformanceData = async () => {
     try {
-      const response = await axiosInstance.get(
-        `/api/truckers/performance?timeRange=${timeRange}`
-      );
-      setPerformanceData(response.data.data);
+      // Comment out the API call and use mock data for development
+      // const response = await axiosInstance.get(`/api/truckers/performance`);
+      // setPerformanceData(response.data.data);
+      setPerformanceData(MOCK_PERFORMANCE_DATA);
     } catch (error) {
       console.error("Error fetching performance data:", error);
       toast.error("Failed to fetch performance data. Please try again.");
@@ -287,10 +336,8 @@ export default function TruckerPerformance() {
                 endAngle={0}
               >
                 <RadialBar
-                  minAngle={15}
                   label={{ fill: "#666", position: "insideStart" }}
                   background
-                  clockWise={true}
                   dataKey="score"
                 />
                 <Legend
