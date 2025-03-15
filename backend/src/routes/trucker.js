@@ -21,6 +21,7 @@ const {
 
 const { protect } = require("../middleware/auth");
 
+router.post("/", createTrucker);
 // Protect all routes
 router.use(protect);
 
@@ -32,7 +33,6 @@ router.delete("/documents/:id", deleteDocument);
 // Trucker routes
 router.get("/", getTruckers);
 router.get("/bids", getBids);
-router.post("/", createTrucker);
 router.get("/dashboard", getDashboard);
 router.get("/loads", getLoads);
 router.get("/earnings", getEarnings);

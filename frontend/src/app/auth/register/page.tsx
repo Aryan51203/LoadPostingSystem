@@ -3,7 +3,7 @@
 import axiosInstance from "@/lib/utils/axiosInstance";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { toast } from "react-toastify";
 import ShipperRegistration from "./components/ShipperRegistration";
 import TruckerRegistration from "./components/TruckerRegistration";
@@ -35,6 +35,14 @@ interface FormData {
 }
 
 export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RegisterContent />
+    </Suspense>
+  );
+}
+
+function RegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const role = searchParams.get("role") || "";

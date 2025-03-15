@@ -29,7 +29,7 @@ router.get("/:id", protect, getShipper);
 // @route   POST api/shippers
 // @desc    Register a new shipper
 // @access  Private
-router.post("/", protect, createShipper);
+router.post("/", createShipper);
 
 // @route   PUT api/shippers/:id
 // @desc    Update shipper
